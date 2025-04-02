@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retinal Image Analysis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://t3.ftcdn.net/jpg/02/26/11/28/360_F_226112855_yeHzKpT5GlvblgZlibf9MvJZLVjsqGYf.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+            color: white;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-button {
+            background-color: #3f5c94;
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 0 10px;
+            border-radius: 20px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .nav-button:hover {
+            background-color: #567eb3;
+            transform: translateY(-3px);
+        }
+        /* Content Box */
+        .content {
+            padding: 40px;
+            position: absolute;
+            top: 35%;
+            left: 5%;
+            width: 40%;
+            background: linear-gradient(to right, #1e3c72, #2a5298); /* blue gradient */
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+
+
+        h1 {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #fff;
+        }
+
+        .abstract-box {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        #abstract-button {
+            background-color: #1e3c72; /* updated button color */
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 30px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        #abstract-button:hover {
+            background-color: #2a5298; /* updated hover color */
+            transform: scale(1.05);
+        }
+
+        #abstract-text {
+            margin-top: 15px;
+            display: none;
+            font-size: 16px;
+            line-height: 1.6;
+            text-align: justify;
+            color: #ddd;
+        }
+
+        #abstract-text.visible {
+            display: block;
+        }
+        
+        /* Add some subtle animation for content appearance */
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .content {
+            animation: fadeIn 1s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <button class="nav-button">Home</button>
+        <button class="nav-button" onclick="window.location.href='/prediction';">Prediction</button>
+        <button class="nav-button" onclick="window.location.href='/analysis';">Analysis</button>
+    </div>
+
+    <div class="content">
+        <h1>Automated Retinal Screening and Diagnosis</h1>
+        <div class="abstract-box">
+            <button id="abstract-button">Abstract</button>
+            <div id="abstract-text">
+                <p>
+                    Retinal diseases like Diabetic Retinopathy, AMD, and Glaucoma are major health concerns that can lead to vision loss if undiagnosed. Manual diagnosis is time-consuming and prone to inconsistencies, highlighting the need for an automated, efficient detection system. This project developed a deep learning model for classifying 11 retinal disease categories, aiming to improve early detection and treatment outcomes. The system enhances diagnostic accuracy by identifying disease-specific patterns in retinal images, even at early stages. It demonstrates potential as a practical tool for improving patient outcomes and advancing AI-driven healthcare solutions.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('abstract-button').addEventListener('click', function () {
+            const abstractText = document.getElementById('abstract-text');
+            abstractText.classList.toggle('visible'); // Toggle the visibility class
+        });
+    </script>
+</body>
+</html>

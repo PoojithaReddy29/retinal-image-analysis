@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retinal Image Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ece9e6, #ffffff);
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-button {
+            background-color: #3f5c94;
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 0 10px;
+            border-radius: 20px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .nav-button:hover {
+            background-color: #567eb3;
+            transform: translateY(-3px);
+        }
+
+        .content {
+            padding: 30px;
+            background: white;
+            margin: 30px auto;
+            max-width: 900px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 24px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        label {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        input[type="file"] {
+            background-color: #f7f9fc;
+            border: 1px solid #ccd6e4;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input[type="file"]:focus {
+            border-color: #3f5c94;
+            box-shadow: 0 0 6px rgba(63, 92, 148, 0.5);
+        }
+
+        button[type="submit"] {
+            background-color: #1e3c72;
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #2a5298;
+            transform: translateY(-3px);
+        }
+
+        #prediction-result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            background-color: #f9fafc;
+            border-radius: 8px;
+            border: 1px solid #dce1e8;
+        }
+
+        #image-preview-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        #image-preview {
+            max-width: 100%;
+            max-height: 300px;
+            display: none;
+            border-radius: 8px;
+            border: 2px solid #ccd6e4;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #threshold-container, #highlighted-container {
+            display: none;
+        }
+
+        .image-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            max-height: 300px;
+            display: block;
+            border-radius: 8px;
+            border: 2px solid #ccd6e4;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Chatbot positioning */
+        #kommunicate-widget-iframe {
+            position: fixed;
+            bottom: 20px;  /* Adjust this value to control the distance from the bottom of the page */
+            right: 20px;   /* Controls the distance from the right edge of the page */
+            transform: translateY(-1cm);
+            width: 300px; 
+            height: 500px;  
+        }
+
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <button class="nav-button" onclick="window.location.href='/';">Home</button>
+        <button class="nav-button" onclick="window.location.href='/prediction';">Prediction</button>
+        <button class="nav-button" onclick="window.location.href='/analysis';">Analysis</button>
+    </div>
+
+    <div class="content">
+        <h1>Automated Retinal Screening and Diagnosis</h1>
+        <form id="image-form" action="/predict" method="POST" enctype="multipart/form-data">
+            <label for="file">Upload Retinal Image:</label>
+            <input type="file" name="file" id="file" accept="image/*" required>
+            <button type="submit">Predict</button>
+        </form>
+
+        <div id="image-preview-container">
+            <img id="image-preview" src="" alt="Uploaded Image Preview">
+        </div>
+
+        <div id="prediction-result"></div>
+
+        <!-- Display Threshold and Highlighted Images side by side (Initially hidden) -->
+        <div class="image-container" id="image-container">
+            <div id="threshold-container">
+                <h3>Threshold Image</h3>
+                <img id="threshold-image" src="" alt="Threshold Image">
+            </div>
+            <div id="highlighted-container">
+                <h3>Affected Area</h3>
+                <img id="highlighted-image" src="" alt="Highlighted Affected Area">
+            </div>
+        </div>
+    </div>
+
+<!-- Chatbot Widget -->
+<div id="chatbot-widget"></div>
+<script type="text/javascript">
+    (function(d, m){
+        var kommunicateSettings = 
+            {"appId":"f0fcf2de7eacd91cc9d815c698fe5ea3", "botIds":["retinal-screening-bywwe"], "assignee":"retinal-screening-bywwe", "popupWidget":true, "automaticChatOpenOnNavigation":true};
+        var s = document.createElement("script"); s.type = "text/javascript"; s.async = true;
+        s.src = "https://widget.kommunicate.io/v2/kommunicate.app";
+        var h = document.getElementsByTagName("head")[0]; h.appendChild(s);
+        window.kommunicate = m; m._globals = kommunicateSettings;
+    })(document, window.kommunicate || {});
+</script>
+
+    <script>
+        const form = document.getElementById('image-form');
+        const predictionResult = document.getElementById('prediction-result');
+        const imagePreview = document.getElementById('image-preview');
+        const thresholdImage = document.getElementById('threshold-image');
+        const highlightedImage = document.getElementById('highlighted-image');
+        const thresholdContainer = document.getElementById('threshold-container');
+        const highlightedContainer = document.getElementById('highlighted-container');
+        const imageContainer = document.getElementById('image-container');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+            const response = await fetch('/predict', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const result = await response.json();
+
+            // Extract the advice string from the result and remove the unnecessary parts
+            let advice = result.advice;
+            if (typeof advice === 'object' && advice.hasOwnProperty('advice')) {
+                advice = advice.advice; // Extract the actual advice string
+            }
+
+            // Show the result
+            predictionResult.innerHTML = `
+                <p><strong>Prediction:</strong> ${result.prediction}</p>
+                <p><strong>Advice:</strong> ${advice}</p>
+            `;
+
+            // Display the uploaded image preview
+            const file = formData.get('file');
+            const reader = new FileReader();
+            reader.onloadend = function () {
+                imagePreview.src = reader.result;
+                imagePreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+
+            // Display the threshold image
+            thresholdImage.src = 'data:image/png;base64,' + result.threshold_image;
+            thresholdContainer.style.display = 'block'; // Show the threshold container
+
+            // Display the highlighted image
+            highlightedImage.src = 'data:image/png;base64,' + result.highlighted_image;
+            highlightedContainer.style.display = 'block'; // Show the highlighted container
+        });
+    </script>
+</body>
+</html>
